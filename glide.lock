@@ -1,0 +1,6 @@
+hash: 02fbcb256e518f153c2e204675e8712349deceb4cc88f541a65c8b3661ac48ea
+updated: 2017-07-20T12:51:54.388752752+08:00
+imports:
+- name: gopkg.in/macaron.v1
+  version: a325110f8b392bce3e5cdeb8c44bf98078ada3be
+testImports: []

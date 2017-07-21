@@ -1,18 +1,18 @@
 package main
 
 import (
-	"log"
 	"net/http"
-
 	"gopkg.in/macaron.v1"
+
+	log "github.com/cihub/seelog"
 )
 
 func main() {
 	m := macaron.Classic()
 	m.Get("/", myHandler)
 
-	log.Println("Server is running...")
-	log.Println(http.ListenAndServe("0.0.0.0:4000", m))
+	log.Info("Server is running...")
+	log.Info(http.ListenAndServe("0.0.0.0:4000", m))
 }
 
 func myHandler(ctx *macaron.Context) string {

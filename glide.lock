@@ -1,6 +1,18 @@
-hash: 02fbcb256e518f153c2e204675e8712349deceb4cc88f541a65c8b3661ac48ea
-updated: 2017-07-20T12:51:54.388752752+08:00
+hash: 760e6ba65332d860be92508b0fcc53a88805b513ac053cf0936d476b6ece6bce
+updated: 2017-07-20T13:39:18.397535642+08:00
 imports:
+- name: github.com/cihub/seelog
+  version: d2c6e5aa9fbfdd1c624e140287063c7730654115
+- name: github.com/go-macaron/inject
+  version: d8a0b8677191f4380287cfebd08e462217bac7ad
+- name: github.com/Unknwon/com
+  version: 0db4a625e949e956314d7d1adea9bf82384cc10c
+- name: golang.org/x/crypto
+  version: 4bc1c249b153ce1da9f55437759cec51fe6acabb
+  subpackages:
+  - pbkdf2
+- name: gopkg.in/ini.v1
+  version: d3de07a94d22b4a0972deb4b96d790c2c0ce8333
 - name: gopkg.in/macaron.v1
   version: a325110f8b392bce3e5cdeb8c44bf98078ada3be
 testImports: []

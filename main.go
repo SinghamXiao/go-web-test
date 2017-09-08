@@ -2,19 +2,26 @@ package main
 
 import (
 	"net/http"
-	"gopkg.in/macaron.v1"
 
+	. "service"
+
+	"gopkg.in/macaron.v1"
 	log "github.com/cihub/seelog"
 )
 
-func main() {
-	m := macaron.Classic()
-	m.Get("/", myHandler)
+var m *macaron.Macaron
 
-	log.Info("Server is running...")
-	log.Info(http.ListenAndServe("0.0.0.0:4000", m))
+func init() {
+	m = macaron.Classic()
 }
 
-func myHandler(ctx *macaron.Context) string {
-	return "the request path is: " + ctx.Req.RequestURI
+func main() {
+	log.Warn("Golang Web Test Server")
+
+	RouterBinding(m) // 路由绑定函数
+
+	err := http.ListenAndServe(":9090", m) //设置监听的端口
+	if err != nil {
+		log.Error("ListenAndServe: ", err)
+	}
 }

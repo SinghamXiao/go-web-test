@@ -12,14 +12,15 @@ func RegisterRouter(m *macaron.Macaron) {
 }
 
 func registerHandler(ctx *macaron.Context) []byte {
-
 	body, err := ioutil.ReadAll(ctx.Req.Request.Body)
 	if err != nil {
 		fmt.Println(string(body))
 	}
-	fmt.Println(string(body))
-	userInfo := Decode(body)
-	fmt.Println(userInfo.Username)
+
+	registerInfo := DecodeRegisterInfo(body)
+	if registerInfo != nil {
+		fmt.Println("Username: ", registerInfo.Username)
+	}
 
 	return body
 }

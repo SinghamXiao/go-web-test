@@ -5,7 +5,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-type UserInfo struct {
+type RegisterInfo struct {
 	Username string `json:"username"`
 
 	Password string `json:"password"`
@@ -13,7 +13,7 @@ type UserInfo struct {
 	ConfirmPassword string `json:"confirmPassword"`
 }
 
-func (this *UserInfo) encode() []byte {
+func (this *RegisterInfo) encode() []byte {
 	bytes, err := json.Marshal(this)
 	if err != nil {
 		return make([]byte, 0)
@@ -21,8 +21,8 @@ func (this *UserInfo) encode() []byte {
 	return bytes
 }
 
-func Decode(data []byte) *UserInfo {
-	userInfo := new(UserInfo)
+func DecodeRegisterInfo(data []byte) *RegisterInfo {
+	userInfo := new(RegisterInfo)
 	err := gjson.Unmarshal(data, userInfo)
 	if err != nil {
 		return nil

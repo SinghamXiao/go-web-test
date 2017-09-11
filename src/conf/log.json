@@ -1,0 +1,10 @@
+{
+  "filename": "/home/singhamxiao/logs/go-web-test.log",
+  "level": 7,
+  "maxLines": 10000,
+  "maxsize": 1024,
+  "daily": true,
+  "maxDays": 15,
+  "rotate": true,
+  "perm": "0600"
+}

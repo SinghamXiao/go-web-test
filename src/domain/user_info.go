@@ -13,16 +13,19 @@ type UserInfo struct {
 	ConfirmPassword string `json:"confirmPassword"`
 }
 
-func (userInfo *UserInfo) encode() []byte {
-	s, err := json.Marshal(userInfo)
+func (this *UserInfo) encode() []byte {
+	bytes, err := json.Marshal(this)
 	if err != nil {
 		return make([]byte, 0)
 	}
-	return s
+	return bytes
 }
 
 func Decode(data []byte) *UserInfo {
 	userInfo := new(UserInfo)
-	gjson.Unmarshal(data, userInfo)
+	err := gjson.Unmarshal(data, userInfo)
+	if err != nil {
+		return nil
+	}
 	return userInfo
 }

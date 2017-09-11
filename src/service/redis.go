@@ -21,51 +21,55 @@ type RedisClient struct {
 	password string
 }
 
-func (rc *RedisClient) StartAndGC(config string) error {
+func (this *RedisClient) StartAndGC(config string) error {
 	var cf map[string]string = make(map[string]string)
 	json.Unmarshal([]byte(config), &cf)
 
 	if _, ok := cf["key"]; !ok {
 		cf["key"] = DefaultKey
 	}
+
 	if _, ok := cf["conn"]; !ok {
 		return errors.New("config has no conn key")
 	}
+
 	if _, ok := cf["dbNum"]; !ok {
 		cf["dbNum"] = "0"
 	}
+
 	if _, ok := cf["password"]; !ok {
 		cf["password"] = ""
 	}
-	rc.key = cf["key"]
-	rc.connInfo = cf["conn"]
-	rc.dbNum, _ = strconv.Atoi(cf["dbNum"])
-	rc.password = cf["password"]
 
-	rc.connectInit()
+	this.key = cf["key"]
+	this.connInfo = cf["conn"]
+	this.dbNum, _ = strconv.Atoi(cf["dbNum"])
+	this.password = cf["password"]
 
-	c := rc.p.Get()
+	this.connectInit()
+
+	c := this.p.Get()
 	defer c.Close()
 
 	return c.Err()
 }
 
 // connect to redis.
-func (rc *RedisClient) connectInit() {
+func (this *RedisClient) connectInit() {
 	dialFunc := func() (c redis.Conn, err error) {
-		c, err = redis.Dial("tcp", rc.connInfo)
+		c, err = redis.Dial("tcp", this.connInfo)
 		if err != nil {
 			return nil, err
 		}
 
-		if rc.password != "" {
-			if _, err := c.Do("AUTH", rc.password); err != nil {
+		if this.password != "" {
+			if _, err := c.Do("AUTH", this.password); err != nil {
 				c.Close()
 				return nil, err
 			}
 		}
 
-		_, selectErr := c.Do("SELECT", rc.dbNum)
+		_, selectErr := c.Do("SELECT", this.dbNum)
 		if selectErr != nil {
 			c.Close()
 			return nil, selectErr
@@ -73,36 +77,69 @@ func (rc *RedisClient) connectInit() {
 		return
 	}
 	// initialize a new pool
-	rc.p = &redis.Pool{
-		MaxIdle:     3,
+	this.p = &redis.Pool{
+		MaxIdle:     16,
+		MaxActive:   1024,
 		IdleTimeout: 180 * time.Second,
 		Dial:        dialFunc,
 	}
 }
 
 // actually do the redis cmds
-func (rc *RedisClient) do(commandName string, args ...interface{}) (reply interface{}, err error) {
-	c := rc.p.Get()
+func (this *RedisClient) do(commandName string, args ...interface{}) (reply interface{}, err error) {
+	c := this.p.Get()
 	defer c.Close()
 
 	return c.Do(commandName, args...)
 }
 
-func (rc *RedisClient) Set(key string, val interface{}) error {
-	_, err := rc.do("SET", key, val)
+func (this *RedisClient) Del(key string) (int, error) {
+	return redis.Int(this.do("DEL", key))
+}
+
+func (this *RedisClient) Exists(key string) (int, error) {
+	return redis.Int(this.do("EXISTS", key))
+}
+
+func (this *RedisClient) ExpireAt(key string, t uint64) (int, error) {
+	return redis.Int(this.do(" EXPIREAT", key))
+}
+
+func (this *RedisClient) Set(key string, val interface{}) error {
+	_, err := this.do("SET", key, val)
 	return err
 }
 
-func (rc *RedisClient) Get(key string) (string, error) {
-	return redis.String(rc.do("GET", key))
+func (this *RedisClient) Get(key string) (string, error) {
+	return redis.String(this.do("GET", key))
+}
+
+func (this *RedisClient) HGet(key, field string) (string, error) {
+	return redis.String(this.do("HGET", key))
+}
+
+func (this *RedisClient) HMGet(key, field string) (string, error) {
+	return redis.String(this.do("HGET", key))
+}
+
+func (this *RedisClient) HGetAll(key string) ([]string, error) {
+	return redis.Strings(this.do("HGETALL", key))
+}
+
+func (this *RedisClient) HSet(key, field, value string) (int, error) {
+	return redis.Int(this.do("HSET", key, field, value))
+}
+
+func (this *RedisClient) HMSet(key, field, value string) (int, error) {
+	return redis.Int(this.do("HMSET", key, field, value))
 }
 
 func NewRedisClient(config string) (*RedisClient, error) {
-	rc := new(RedisClient)
-	err := rc.StartAndGC(config)
+	this := new(RedisClient)
+	err := this.StartAndGC(config)
 	if err != nil {
 		return nil, err
 	}
 
-	return rc, nil
+	return this, nil
 }

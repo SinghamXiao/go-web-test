@@ -10,6 +10,10 @@ var version string = beego.AppConfig.String("version")
 var host string = beego.AppConfig.String("host")
 var port string = beego.AppConfig.String("port")
 
+func init() {
+
+}
+
 func main() {
 	appName := beego.BConfig.AppName
 	beego.Notice(appName, version)

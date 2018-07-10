@@ -7,5 +7,5 @@ import (
 
 func init() {
 	// Register routers.
-	beego.Router("/", &controllers.RootController{}, "get:Get")
+	beego.Router("/", &controllers.IndexController{}, "GET:Index")
 }
